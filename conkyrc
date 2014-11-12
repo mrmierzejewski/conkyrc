@@ -10,13 +10,18 @@ gap_x 0
 gap_y 0
 minimum_size 268 1220
 maximum_width 268
-alignment top_left
+alignment top_right
 own_window yes
 own_window_type normal
 own_window_transparent yes
 own_window_argb_visual yes
 own_window_argb_value 255
 own_window_hints undecorate,sticky,skip_taskbar,skip_pager,below
+#own_window_type normal
+#own_window_transparent no
+#own_window_hints undecorated,below,sticky,skip_taskbar,skip_pager
+#own_window_argb_visual yes
+#own_window_argb_value 0
 border_inner_margin 0
 border_outer_margin 0
 
@@ -62,7 +67,7 @@ ${execi 300 curl -s "http://weather.yahooapis.com/forecastrss?w=493776&u=c" -o ~
 ${goto 36}${voffset 0}${font Droid Sans :size=36}${color1}${execi 300 grep "yweather:condition" ~/.cache/weather.xml | grep -o "temp=\"[^\"]*\"" | grep -o "\"[^\"]*\"" | grep -o "[^\"]*"}°${font}${color}
 ${goto 46}${voffset 14}${font Droid Sans :size=12}${color1}${execi 300 grep "yweather:condition" ~/.cache/weather.xml | grep -o "text=\"[^\"]*\"" | grep -o "\"[^\"]*\"" | grep -o "[^\"]*"}${font}${color}
 \
-${color1}${alignr 55}${voffset -72}${execi 300 grep "yweather:atmosphere" ~/.cache/weather.xml | grep -o "pressure=\"[^\"]*\"" | grep -o "\"[^\"]*\"" | grep -o "[^\"]*"} ${execi 300 grep "yweather:units" ~/.cache/weather.xml | grep -o "pressure=\"[^\"]*\"" | grep -o "\"[^\"]*\"" | grep -O "[^\"]*"}
+${color1}${alignr 55}${voffset -72}${execi 300 grep "yweather:atmosphere" ~/.cache/weather.xml | grep -o "pressure=\"[^\"]*\"" | grep -o "\"[^\"]*\"" | grep -o "[^\"]*"} ${execi 300 grep "yweather:units" ~/.cache/weather.xml | grep -o "pressure=\"[^\"]*\"" | grep -o "\"[^\"]*\"" | grep -o "[^\"]*"}
 ${color1}${alignr 55}${voffset 7}${execi 300 grep "yweather:atmosphere" ~/.cache/weather.xml | grep -o "humidity=\"[^\"]*\"" | grep -o "\"[^\"]*\"" | grep -o "[^\"]*"} %${color}
 ${color1}${alignr 55}${voffset 7}${execi 300 grep "yweather:wind" ~/.cache/weather.xml | grep -o "speed=\"[^\"]*\"" | grep -o "\"[^\"]*\"" | grep -o "[^\"]*"} ${execi 300 grep "yweather:units" ~/.cache/weather.xml | grep -o "speed=\"[^\"]*\"" | grep -o "\"[^\"]*\"" | grep -o "[^\"]*"}${color}
 \
@@ -73,6 +78,7 @@ ${color3}${voffset -13}${alignc -77}${execi 300 grep "yweather:forecast" ~/.cach
 ${color2}${voffset 40}${alignc 77}${execi 300 grep "yweather:forecast" ~/.cache/weather.xml | grep -o "low=\"[^\"]*\"" | grep -o "\"[^\"]*\"" | grep -o "[^\"]*" | awk 'NR==1'}°/${execi 300 grep "yweather:forecast" ~/.cache/weather.xml | grep -o "high=\"[^\"]*\"" | grep -o "\"[^\"]*\"" | grep -o "[^\"]*" | awk 'NR==1'}°${color}
 ${color2}${voffset -13}${alignc}${execi 300 grep "yweather:forecast" ~/.cache/weather.xml | grep -o "low=\"[^\"]*\"" | grep -o "\"[^\"]*\"" | grep -o "[^\"]*" | awk 'NR==2'}°/${execi 300 grep "yweather:forecast" ~/.cache/weather.xml | grep -o "high=\"[^\"]*\"" | grep -o "\"[^\"]*\"" | grep -o "[^\"]*" | awk 'NR==2'}°${color}
 ${color2}${voffset -13}${alignc -77}${execi 300 grep "yweather:forecast" ~/.cache/weather.xml | grep -o "low=\"[^\"]*\"" | grep -o "\"[^\"]*\"" | grep -o "[^\"]*" | awk 'NR==3'}°/${execi 300 grep "yweather:forecast" ~/.cache/weather.xml | grep -o "high=\"[^\"]*\"" | grep -o "\"[^\"]*\"" | grep -o "[^\"]*" | awk 'NR==3'}°${color}
+${hr 2}
 \
 # Cpu, memory and disk IO
 \
@@ -85,7 +91,7 @@ ${goto 40}Mem:${alignr 39}${memperc}%
 
 ${goto 40}${diskiograph 26,190 FFFFFF FFFFFF -l}
 ${goto 40}Disk I/O:${alignr 39}${diskio}
-
+${hr 2}
 \
 # Network
 \
@@ -99,6 +105,7 @@ ${goto 40}${upspeedgraph eth0 26,80 FFFFFF FFFFFF}${goto 150}${downspeedgraph et
 ${goto 40}${color5}Up: ${color2}${upspeed eth0}${color5}${goto 150}Down: ${color2}${downspeed eth0}
 ${goto 40}${color5}Sent: ${color2}${totalup eth0}${color5}${goto 150}Received: ${color2}${totaldown eth0}
 ${endif}
+${hr 2}
 \
 # Proceses
 \
@@ -115,7 +122,15 @@ ${goto 40}${color2}${top_mem name 2}${color}${alignr 39}${top cpu 2} %
 ${goto 40}${color2}${top_mem name 3}${color}${alignr 39}${top cpu 3} %
 ${goto 40}${color2}${top_mem name 4}${color}${alignr 39}${top cpu 4} %
 ${goto 40}${color2}${top_mem name 5}${color}${alignr 39}${top cpu 5} %
-
+${hr 2}
+\
+# System shortcuts
+${font Droid Sans :size=12}
+${goto 40}W-t${alignr 40}Terminal
+${goto 40}W-e${alignr 40}Editor
+${goto 40}W-f${alignr 40}File browser
+${goto 40}W-w${alignr 40}Web browser
+${goto 40}C-W-F4${alignr 40}Log off
 \
 # Various images including the icons of the forecast #
 \
