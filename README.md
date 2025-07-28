@@ -1,7 +1,7 @@
 Conky configuration file
 ========================
 
-This is my Conky configuration files. 
+These are my Conky configuration files. 
 
 ![Conky](https://raw.github.com/zenzire/conkyrc/master/screenshot.png)
 
@@ -9,10 +9,10 @@ This is my Conky configuration files.
 Installation
 ------------
 
-Fetch the configuration files from GitHub repository:
+Fetch the configuration files from the GitHub repository:
 
 ``
-$ git clone git://github.com/zenzire/conkyrc.git ~/.conky
+$ git clone git://github.com/mrmierzejewski/conkyrc.git ~/.conky
 ``
 
 Create link:
