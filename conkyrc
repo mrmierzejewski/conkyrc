@@ -1,87 +1,90 @@
-# Conky settings #
-background yes
-update_interval 1
-double_buffer yes
-no_buffers yes
-imlib_cache_size 10
+-- Conky settings
+conky.config = {
+    background = true,
+    update_interval = 1,
+    double_buffer = true,
+    no_buffers = true,
+    imlib_cache_size = 10,
 
-# Window specifications #
-gap_x 0
-gap_y 0
-minimum_size 268 1220
-maximum_width 268
-alignment top_right
-own_window yes
-own_window_type normal
-own_window_transparent yes
-own_window_argb_visual yes
-own_window_argb_value 255
-own_window_hints undecorated,sticky,skip_taskbar,skip_pager,below
-#own_window_type normal
-#own_window_transparent no
-#own_window_hints undecorated,below,sticky,skip_taskbar,skip_pager
-#own_window_argb_visual yes
-#own_window_argb_value 0
-border_inner_margin 0
-border_outer_margin 0
+    -- Window specifications
+    gap_x = 0,
+    gap_y = 0,
+    minimum_width = 268,
+    minimum_height = 1220,
+    maximum_width = 268,
+    alignment = 'top_right',
+    own_window = true,
+    own_window_type = 'normal',
+    own_window_transparent = true,
+    own_window_argb_visual = true,
+    own_window_argb_value = 255,
+    own_window_hints = 'undecorated,sticky,skip_taskbar,skip_pager,below',
+    border_inner_margin = 0,
+    border_outer_margin = 0,
 
-# Graphics settings #
-draw_shades no
-default_shade_color AAAAAA
-draw_outline no
-default_outline_color AAAAAA
-draw_borders no
-draw_graph_borders no
-default_graph_size 26 80
-show_graph_scale no
-show_graph_range no
+    -- Graphics settings
+    draw_shades = false,
+    default_shade_color = 'AAAAAA',
+    draw_outline = false,
+    default_outline_color = 'AAAAAA',
+    draw_borders = false,
+    draw_graph_borders = false,
+    default_graph_width = 26,
+    default_graph_height = 80,
+    show_graph_scale = false,
+    show_graph_range = false,
 
-# Text settings #
-use_xft yes
-xftalpha 0
-xftfont Droid Sans:size=8
-text_buffer_size 256
-override_utf8_locale yes
+    -- Text settings
+    use_xft = true,
+    xftalpha = 0,
+    font = 'Droid Sans:size=8',
+    text_buffer_size = 256,
+    override_utf8_locale = true,
 
-# Useful shortenings #
-short_units yes
-pad_percents  2
-top_name_width 30
+    -- Useful shortenings
+    short_units = true,
+    pad_percents = 2,
+    top_name_width = 30,
 
-# Color scheme #
-default_color FFFFFF
-color1 FFFFFF
-color2 FFFFFF
-color3 FFFFFF
-color4 FFFFFF
-color5 DCDCDC
-color6 FFFFFF
-color7 FFFFFF
-color8 FFFFFF
+    -- Color scheme
+    default_color = 'FFFFFF',
+    color1 = 'FFFFFF',
+    color2 = 'FFFFFF',
+    color3 = 'FFFFFF',
+    color4 = 'FFFFFF',
+    color5 = 'DCDCDC',
+    color6 = 'FFFFFF',
+    color7 = 'FFFFFF',
+    color8 = 'FFFFFF',
+};
 
-TEXT
-# Fixed the weather parsing peice
-# You can build the command here:
-# https://developer.yahoo.com/yql/console/?q=select%20*%20from%20weather.forecast%20where%20woeid%20%3D%201198989&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys&debug=true#h=select+*+from+weather.forecast+where+woeid%3D2502265
-${execi 300 curl -s "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20weather.forecast%20where%20woeid%3D28350087&diagnostics=true&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys" -o ~/.cache/weather.xml}
+conky.text = [[
+# Weather configuration using OpenWeatherMap API
+# To use this, you need to:
+# 1. Get a free API key from https://openweathermap.org/api
+# 2. Set your location (city name, e.g., "London,UK" or "New York,US")
+# 3. Replace YOUR_API_KEY and YOUR_LOCATION below
+# Location can be: city name, "city,country", or "lat,lon" coordinates
+${execi 300 curl -s "https://api.openweathermap.org/data/2.5/weather?q=YOUR_LOCATION&appid=YOUR_API_KEY&units=imperial" -o ~/.cache/weather-current.json}
+${execi 300 curl -s "https://api.openweathermap.org/data/2.5/forecast?q=YOUR_LOCATION&appid=YOUR_API_KEY&units=imperial&cnt=25" -o ~/.cache/weather-forecast.json}
 \
 # Weather
 \
-${goto 36}${voffset 0}${font Droid Sans :size=36}${color1}${execi 300 grep "yweather:condition" ~/.cache/weather.xml | grep -o "temp=\"[^\"]*\"" | grep -o "\"[^\"]*\"" | grep -o "[^\"]*"}°${font}${color}
+${goto 36}${voffset 0}${font Droid Sans :size=36}${color1}${execi 300 cat ~/.cache/weather-current.json | grep -o '"main":{[^}]*}' | grep -o '"temp":[^,}]*' | grep -o '[0-9.]*' | head -1 | cut -d. -f1}°${font}${color}
 # I had to comment out this line - was printing out and overlaying.
-#${goto 46}${voffset 14}${font Droid Sans :size=12}${color1}${execi 300 grep "yweather:condition" ~/.cache/weather.xml | grep -o "text=\"[^\"]*\"" | grep -o "\"[^\"]*\"" | grep -o "[^\"]*"}${font}${color}
+#${goto 46}${voffset 14}${font Droid Sans :size=12}${color1}${execi 300 cat ~/.cache/weather-current.json | grep -o '"description":"[^"]*"' | grep -o '"[^"]*"' | head -1 | cut -d'"' -f2}${font}${color}
 \
-${color1}${alignr 55}${voffset -72}${execi 300 grep "yweather:atmosphere" ~/.cache/weather.xml | grep -o "pressure=\"[^\"]*\"" | grep -o "\"[^\"]*\"" | grep -o "[^\"]*"} ${execi 300 grep "yweather:units" ~/.cache/weather.xml | grep -o "pressure=\"[^\"]*\"" | grep -o "\"[^\"]*\"" | grep -o "[^\"]*"}
-${color1}${alignr 55}${voffset 7}${execi 300 grep "yweather:atmosphere" ~/.cache/weather.xml | grep -o "humidity=\"[^\"]*\"" | grep -o "\"[^\"]*\"" | grep -o "[^\"]*"} %${color}
-${color1}${alignr 55}${voffset 7}${execi 300 grep "yweather:wind" ~/.cache/weather.xml | grep -o "speed=\"[^\"]*\"" | grep -o "\"[^\"]*\"" | grep -o "[^\"]*"} ${execi 300 grep "yweather:units" ~/.cache/weather.xml | grep -o "speed=\"[^\"]*\"" | grep -o "\"[^\"]*\"" | grep -o "[^\"]*"}${color}
+${color1}${alignr 55}${voffset -72}${execi 300 cat ~/.cache/weather-current.json | grep -o '"main":{[^}]*}' | grep -o '"pressure":[^,}]*' | grep -o '[0-9]*'} hPa${color}
+${color1}${alignr 55}${voffset 7}${execi 300 cat ~/.cache/weather-current.json | grep -o '"main":{[^}]*}' | grep -o '"humidity":[^,}]*' | grep -o '[0-9]*'} %${color}
+${color1}${alignr 55}${voffset 7}${execi 300 cat ~/.cache/weather-current.json | grep -o '"wind":{[^}]*}' | grep -o '"speed":[^,}]*' | grep -o '[0-9.]*' | head -1 | cut -d. -f1} mph${color}
 \
-${color3}${voffset 30}${alignc 77}${execi 300 grep "yweather:forecast" ~/.cache/weather.xml | grep -o "day=\"[^\"]*\"" | grep -o "\"[^\"]*\"" | grep -o "[^\"]*" | awk 'NR==1' | tr '[a-z]' '[A-Z]'}${color}
-${color3}${voffset -13}${alignc}${execi 300 grep "yweather:forecast" ~/.cache/weather.xml | grep -o "day=\"[^\"]*\"" | grep -o "\"[^\"]*\"" | grep -o "[^\"]*" | awk 'NR==2' | tr '[a-z]' '[A-Z]'}${color}
-${color3}${voffset -13}${alignc -77}${execi 300 grep "yweather:forecast" ~/.cache/weather.xml | grep -o "day=\"[^\"]*\"" | grep -o "\"[^\"]*\"" | grep -o "[^\"]*" | awk 'NR==3' | tr '[a-z]' '[A-Z]'}${color}
+${color3}${voffset 30}${alignc 77}${execi 300 date -d "+1 day" +%a 2>/dev/null || date -v+1d +%a 2>/dev/null | tr '[a-z]' '[A-Z]'}${color}
+${color3}${voffset -13}${alignc}${execi 300 date -d "+2 days" +%a 2>/dev/null || date -v+2d +%a 2>/dev/null | tr '[a-z]' '[A-Z]'}${color}
+${color3}${voffset -13}${alignc -77}${execi 300 date -d "+3 days" +%a 2>/dev/null || date -v+3d +%a 2>/dev/null | tr '[a-z]' '[A-Z]'}${color}
 \
-${color2}${voffset 40}${alignc 77}${execi 300 grep "yweather:forecast" ~/.cache/weather.xml | grep -o "low=\"[^\"]*\"" | grep -o "\"[^\"]*\"" | grep -o "[^\"]*" | awk 'NR==1'}°/${execi 300 grep "yweather:forecast" ~/.cache/weather.xml | grep -o "high=\"[^\"]*\"" | grep -o "\"[^\"]*\"" | grep -o "[^\"]*" | awk 'NR==1'}°${color}
-${color2}${voffset -13}${alignc}${execi 300 grep "yweather:forecast" ~/.cache/weather.xml | grep -o "low=\"[^\"]*\"" | grep -o "\"[^\"]*\"" | grep -o "[^\"]*" | awk 'NR==2'}°/${execi 300 grep "yweather:forecast" ~/.cache/weather.xml | grep -o "high=\"[^\"]*\"" | grep -o "\"[^\"]*\"" | grep -o "[^\"]*" | awk 'NR==2'}°${color}
-${color2}${voffset -13}${alignc -77}${execi 300 grep "yweather:forecast" ~/.cache/weather.xml | grep -o "low=\"[^\"]*\"" | grep -o "\"[^\"]*\"" | grep -o "[^\"]*" | awk 'NR==3'}°/${execi 300 grep "yweather:forecast" ~/.cache/weather.xml | grep -o "high=\"[^\"]*\"" | grep -o "\"[^\"]*\"" | grep -o "[^\"]*" | awk 'NR==3'}°${color}
+${color2}${voffset 40}${alignc 77}${execi 300 MIN1=$(cat ~/.cache/weather-forecast.json | grep -o '"temp":[^,}]*' | grep -o '[0-9.]*' | awk 'NR>=1&&NR<=8' | awk 'BEGIN{min=999}{if($1<min)min=$1}END{print int(min)}'); MAX1=$(cat ~/.cache/weather-forecast.json | grep -o '"temp":[^,}]*' | grep -o '[0-9.]*' | awk 'NR>=1&&NR<=8' | awk 'BEGIN{max=-999}{if($1>max)max=$1}END{print int(max)}'); echo "${MIN1}°/${MAX1}°"}${color}
+${color2}${voffset -13}${alignc}${execi 300 MIN2=$(cat ~/.cache/weather-forecast.json | grep -o '"temp":[^,}]*' | grep -o '[0-9.]*' | awk 'NR>=9&&NR<=16' | awk 'BEGIN{min=999}{if($1<min)min=$1}END{print int(min)}'); MAX2=$(cat ~/.cache/weather-forecast.json | grep -o '"temp":[^,}]*' | grep -o '[0-9.]*' | awk 'NR>=9&&NR<=16' | awk 'BEGIN{max=-999}{if($1>max)max=$1}END{print int(max)}'); echo "${MIN2}°/${MAX2}°"}${color}
+${color2}${voffset -13}${alignc -77}${execi 300 MIN3=$(cat ~/.cache/weather-forecast.json | grep -o '"temp":[^,}]*' | grep -o '[0-9.]*' | awk 'NR>=17&&NR<=24' | awk 'BEGIN{min=999}{if($1<min)min=$1}END{print int(min)}'); MAX3=$(cat ~/.cache/weather-forecast.json | grep -o '"temp":[^,}]*' | grep -o '[0-9.]*' | awk 'NR>=17&&NR<=24' | awk 'BEGIN{max=-999}{if($1>max)max=$1}END{print int(max)}'); echo "${MIN3}°/${MAX3}°"}${color}
 ${hr 2}
 \
 # Cpu, memory and disk IO
@@ -141,6 +144,7 @@ ${goto 40}C-W-F4${alignr 40}Log off
 ${image ~/.conky/images/pressure.png -p 214,20 -s 16x16}\
 ${image ~/.conky/images/humidity.png -p 214,40 -s 16x16}\
 ${image ~/.conky/images/wind.png -p 214,60 -s 16x16}\
-${execi 300 cp -f ~/.conky/icons/$(grep "yweather:forecast" ~/.cache/weather.xml | grep -o "code=\"[^\"]*\"" | grep -o "\"[^\"]*\"" | grep -o "[^\"]*" | awk 'NR==1').png ~/.cache/weather-1.png}${image ~/.cache/weather-1.png -p 41,120 -s 32x32}\
-${execi 300 cp -f ~/.conky/icons/$(grep "yweather:forecast" ~/.cache/weather.xml | grep -o "code=\"[^\"]*\"" | grep -o "\"[^\"]*\"" | grep -o "[^\"]*" | awk 'NR==2').png ~/.cache/weather-2.png}${image ~/.cache/weather-2.png -p 119,120 -s 32x32}\
-${execi 300 cp -f ~/.conky/icons/$(grep "yweather:forecast" ~/.cache/weather.xml | grep -o "code=\"[^\"]*\"" | grep -o "\"[^\"]*\"" | grep -o "[^\"]*" | awk 'NR==3').png ~/.cache/weather-3.png}${image ~/.cache/weather-3.png -p 195,120 -s 32x32}${font}\
+${execi 300 CODE1=$(cat ~/.cache/weather-forecast.json | grep -o '"id":[0-9]*' | awk 'NR==4' | grep -o '[0-9]*'); CODE1=$(echo $CODE1 | awk '{if($1>=200&&$1<300)print"4";else if($1>=300&&$1<400)print"9";else if($1>=500&&$1<600)print"12";else if($1>=600&&$1<700)print"14";else if($1==800)print"32";else if($1==801)print"30";else if($1==802)print"28";else if($1==803||$1==804)print"26";else print"32"}'); cp -f ~/.conky/icons/${CODE1}.png ~/.cache/weather-1.png 2>/dev/null || cp -f ~/.conky/icons/32.png ~/.cache/weather-1.png}${image ~/.cache/weather-1.png -p 41,120 -s 32x32}\
+${execi 300 CODE2=$(cat ~/.cache/weather-forecast.json | grep -o '"id":[0-9]*' | awk 'NR==12' | grep -o '[0-9]*'); CODE2=$(echo $CODE2 | awk '{if($1>=200&&$1<300)print"4";else if($1>=300&&$1<400)print"9";else if($1>=500&&$1<600)print"12";else if($1>=600&&$1<700)print"14";else if($1==800)print"32";else if($1==801)print"30";else if($1==802)print"28";else if($1==803||$1==804)print"26";else print"32"}'); cp -f ~/.conky/icons/${CODE2}.png ~/.cache/weather-2.png 2>/dev/null || cp -f ~/.conky/icons/32.png ~/.cache/weather-2.png}${image ~/.cache/weather-2.png -p 119,120 -s 32x32}\
+${execi 300 CODE3=$(cat ~/.cache/weather-forecast.json | grep -o '"id":[0-9]*' | awk 'NR==20' | grep -o '[0-9]*'); CODE3=$(echo $CODE3 | awk '{if($1>=200&&$1<300)print"4";else if($1>=300&&$1<400)print"9";else if($1>=500&&$1<600)print"12";else if($1>=600&&$1<700)print"14";else if($1==800)print"32";else if($1==801)print"30";else if($1==802)print"28";else if($1==803||$1==804)print"26";else print"32"}'); cp -f ~/.conky/icons/${CODE3}.png ~/.cache/weather-3.png 2>/dev/null || cp -f ~/.conky/icons/32.png ~/.cache/weather-3.png}${image ~/.cache/weather-3.png -p 195,120 -s 32x32}${font}\
+]];
